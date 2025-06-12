@@ -3,3 +3,6 @@ venv/
 
 # Ignore requirements.txt used for installations
 requirements.txt
+
+# Ignore my passwords etc
+.env
