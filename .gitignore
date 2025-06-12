@@ -1,0 +1,5 @@
+# Ignore Python virtual environment
+venv/
+
+# Ignore requirements.txt used for installations
+requirements.txt
