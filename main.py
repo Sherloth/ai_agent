@@ -3,6 +3,7 @@ import sys
 import google.generativeai as genai
 from dotenv import load_dotenv
 
+
 def main():
     # Check if a prompt is provided
     if len(sys.argv) < 2:
@@ -21,11 +22,18 @@ def main():
     genai.configure(api_key=api_key)
 
     # Initialize model
-    model = genai.GenerativeModel("gemini-1.5-flash")  # Replace with "gemini-1.5-pro" if needed
+    model = genai.GenerativeModel("gemini-1.5-flash") # can use pro here
 
-    # Generate content
     prompt = " ".join(sys.argv[1:])
-    response = model.generate_content(prompt)
+
+    # Create list of content messages
+    messages = [
+        {"role": "user", "parts": [prompt]}
+    ]
+
+    response = model.generate_content(messages)
+    
+    
 
     # Print token usage if available
     if hasattr(response, 'usage_metadata'):
