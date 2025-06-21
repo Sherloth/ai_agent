@@ -9,6 +9,16 @@ def main():
     if len(sys.argv) < 2:
         print("Error: No prompt provided.\nUsage: python3 main.py \"<your prompt here>\"")
         sys.exit(1)
+    
+    # Adding flag
+    verbose_flag = False
+    arguments = []
+
+    for arg in sys.argv[1:]:
+        if arg == "--verbose":
+            verbose_flag = True
+        else:
+            arguments.append(arg)
 
     # Load environment variables from .env file
     load_dotenv()
@@ -24,7 +34,7 @@ def main():
     # Initialize model
     model = genai.GenerativeModel("gemini-1.5-flash") # can use pro here
 
-    prompt = " ".join(sys.argv[1:])
+    prompt = " ".join(arguments)
 
     # Create list of content messages
     messages = [
@@ -36,14 +46,16 @@ def main():
     
 
     # Print token usage if available
-    if hasattr(response, 'usage_metadata'):
-        print("Prompt tokens:", response.usage_metadata.prompt_token_count)
-        print("Response tokens:", response.usage_metadata.candidates_token_count)
-    else:
-        print("Token usage information not available.")
+    if verbose_flag:
+        print(f"User prompt: {prompt}")
+        if hasattr(response, 'usage_metadata'):
+            print("Prompt tokens:", response.usage_metadata.prompt_token_count)
+            print("Response tokens:", response.usage_metadata.candidates_token_count)
+        else:
+            print("Token usage information not available.")
+    
 
     # Print the generated text
-    print("Response:")
     print(response.text)
 
 if __name__ == "__main__":
