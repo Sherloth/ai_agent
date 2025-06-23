@@ -22,3 +22,4 @@ def get_files_info(working_directory, directory=None):
         entries.append(f"- {entry.name}: file_size={file_size} bytes, is_dir={is_dir}")
 
     return "\n".join(entries)
+# adding entry for boot to check
