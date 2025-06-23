@@ -6,3 +6,7 @@ requirements.txt
 
 # Ignore my passwords etc
 .env
+
+# Ignore all cache
+*.pyc
+__pycache__/
