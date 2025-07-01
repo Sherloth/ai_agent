@@ -1,11 +1,7 @@
-import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from functions/get_file_content import get_file_content
 
-from functions.get_file_content import get_file_content
-
-
-
+# calculate absolute path to calculator folder
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'calculator'))
 
 def run_tests():
