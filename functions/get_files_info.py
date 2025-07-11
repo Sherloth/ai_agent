@@ -1,4 +1,23 @@
 import os
+from google.generativeai import types
+
+schema_get_files_info = types.FunctionDeclaration(
+    name="get_files_info",
+    description="Lists files in the specified directory along with their sizes, constrained to the working directory.",
+    parameters={
+        "type": "object",
+        "properties": {
+            "directory": {
+                "type": "string",
+                "description": (
+                    "The directory to list files from, relative to the working directory. "
+                    "If not provided, lists files in the working directory itself."
+                ),
+            }
+        },
+        "required": [],
+    }
+)
 
 def get_files_info(working_directory, directory=None):
     try:
@@ -9,12 +28,12 @@ def get_files_info(working_directory, directory=None):
             target = base
 
         if not target.startswith(base):
-            return f"Error: Cannot list '{directory}' as it is outside the permitted working directory"
+            return { "error": f"Cannot list '{directory}' as it is outside the permitted working directory" }
 
         if not os.path.exists(target):
-            return f"Error: '{directory}' does not exist"
+            return { "error": f"'{directory}' does not exist" }
         if not os.path.isdir(target):
-            return f"Error: '{directory}' is not a directory"
+            return { "error": f"'{directory}' is not a directory" }
 
         entries = []
         for entry_name in os.listdir(target):
@@ -30,11 +49,18 @@ def get_files_info(working_directory, directory=None):
                     is_dir = False
                     file_size = 0
 
-                entries.append(f"- {entry_name}: file_size={file_size} bytes, is_dir={is_dir}")
+                entries.append({
+                    "name": entry_name,
+                    "size_bytes": file_size,
+                    "is_dir": is_dir
+                })
             except Exception as e:
-                entries.append(f"- {entry_name}: Error retrieving entry info: {e}")
+                entries.append({
+                    "name": entry_name,
+                    "error": str(e)
+                })
 
-        return "\n".join(entries)
+        return { "files": entries }
 
     except Exception as e:
-        return f"Error: {e}"
+        return { "error": str(e) }
