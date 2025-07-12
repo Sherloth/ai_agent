@@ -1,4 +1,22 @@
 import os
+from google.generativeai import types
+
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Reads the content of a specified file (within the working directory) with a limit of 10,000 characters.",
+    parameters={
+        "type": "object",
+        "properties": {
+            "file_path": {
+                "type": "string",
+                "description": (
+                    "Path to the file to be read, relative to the working directory."
+                ),
+            }
+        },
+        "required": ["file_path"],
+    }
+)
 
 def get_file_content(working_directory, file_path):
     try:

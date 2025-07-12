@@ -4,6 +4,9 @@ import json
 import google.generativeai as genai
 from dotenv import load_dotenv
 from functions.get_files_info import schema_get_files_info
+from functions.get_file_content import schema_get_file_content
+from functions.run_python_file import schema_run_python_file
+from functions.write_file import schema_write_file
 from google.generativeai import types
 
 def main():
@@ -30,7 +33,12 @@ def main():
     genai.configure(api_key=api_key)
 
     # Register function tools
-    available_functions = types.Tool(function_declarations=[schema_get_files_info])
+    available_functions = types.Tool(function_declarations=[
+        schema_get_files_info,
+        schema_get_file_content,
+        schema_run_python_file,
+        schema_write_file
+    ])
 
     model = genai.GenerativeModel(
         model_name="gemini-1.5-flash",
@@ -44,6 +52,9 @@ def main():
     When a user asks a question or makes a request, make a function call plan. You can perform the following operations:
 
     - List files and directories
+    - Read file content
+    - Execute Python files
+    - Write to a file
 
     All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
     """
@@ -90,13 +101,32 @@ def main():
                             args = dict(fn_args_raw)
                             if fn_name == "get_files_info":
                                 from functions.get_files_info import get_files_info
-                                result = get_files_info(
-                                    working_directory=os.getcwd(),
-                                    **args
-                                )
+                                result = get_files_info(working_directory=os.getcwd(), **args)
                                 print("get_files_info() executed successfully!")
                                 print(json.dumps(result, indent=2))
                                 function_call_handled = True
+
+                            elif fn_name == "get_file_content":
+                                from functions.get_file_content import get_file_content
+                                result = get_file_content(working_directory=os.getcwd(), **args)
+                                print("get_file_content() executed successfully!")
+                                print(json.dumps(result, indent=2))
+                                function_call_handled = True
+
+                            elif fn_name == "run_python_file":
+                                from functions.run_python_file import run_python_file
+                                result = run_python_file(working_directory=os.getcwd(), **args)
+                                print("run_python_file() executed successfully!")
+                                print(result)
+                                function_call_handled = True
+
+                            elif fn_name == "write_file":
+                                from functions.write_file import write_file
+                                result = write_file(working_directory=os.getcwd(), **args)
+                                print("write_file() executed successfully!")
+                                print(json.dumps(result, indent=2) if isinstance(result, dict) else result)
+                                function_call_handled = True
+
                         except Exception as e:
                             print("Error during function execution:", e)
                         break

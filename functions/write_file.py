@@ -1,4 +1,24 @@
 import os
+from google.generativeai import types
+
+schema_write_file = types.FunctionDeclaration(
+    name="write_file",
+    description="Writes text content to a file within the working directory. Overwrites existing files or creates new ones.",
+    parameters={
+        "type": "object",
+        "properties": {
+            "file_path": {
+                "type": "string",
+                "description": "Relative path to the file where content should be written."
+            },
+            "content": {
+                "type": "string",
+                "description": "The text content to write into the file."
+            }
+        },
+        "required": ["file_path", "content"],
+    }
+)
 
 def write_file(working_directory, file_path, content):
     try:
@@ -17,7 +37,10 @@ def write_file(working_directory, file_path, content):
         with open(abs_file_path, 'w', encoding='utf-8') as f:
             f.write(content)
 
-        return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
-
+        return {
+            "file_path": file_path,
+            "content": content,
+            "status": f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
+        }
     except Exception as e:
         return f"Error: {str(e)}"

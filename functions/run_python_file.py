@@ -1,5 +1,21 @@
 import os
 import subprocess
+from google.generativeai import types
+
+schema_run_python_file = types.FunctionDeclaration(
+    name="run_python_file",
+    description="Executes a Python (.py) file located within the working directory.",
+    parameters={
+        "type": "object",
+        "properties": {
+            "file_path": {
+                "type": "string",
+                "description": "Relative path to the Python file to execute."
+            }
+        },
+        "required": ["file_path"],
+    }
+)
 
 def run_python_file(working_directory, file_path):
     try:
