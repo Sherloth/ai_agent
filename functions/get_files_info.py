@@ -1,5 +1,6 @@
 import os
 from google.generativeai import types
+from pprint import pprint
 
 schema_get_files_info = types.FunctionDeclaration(
     name="get_files_info",
@@ -60,7 +61,12 @@ def get_files_info(working_directory, directory=None):
                     "error": str(e)
                 })
 
-        return { "files": entries }
+        result = {
+        'directory': directory if directory else ".",
+        'files': entries
+        }
+        pprint(result)
+        return result
 
     except Exception as e:
-        return { "error": str(e) }
+        return { 'error': str(e) }
