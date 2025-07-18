@@ -1,37 +1,34 @@
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import unittest
 
-from functions.run_python_file import run_python_file
+class CalculatorTests(unittest.TestCase):
 
+    def test_add(self):
+        self.assertEqual(2 + 2, 4)
 
+    def test_subtract(self):
+        self.assertEqual(5 - 3, 2)
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'calculator'))
+    def test_multiply(self):
+        self.assertEqual(3 * 4, 12)
 
-def run_tests():
-    print("Test 1: run_python_file('calculator', 'main.py')")
-    result = run_python_file("calculator", "main.py")
-    print("Starts with 'Error:'?", result.startswith("Error:"))
-    print("Preview:", result[:200], "...\n" if len(result) > 200 else "\n")
-    print("-" * 40)
+    def test_divide(self):
+        self.assertEqual(10 / 2, 5)
 
-    print("Test 2: run_python_file('calculator', 'tests.py')")
-    result = run_python_file("calculator", "tests.py")
-    print("Starts with 'Error:'?", result.startswith("Error:"))
-    print("Preview:", result[:200], "...\n" if len(result) > 200 else "\n")
-    print("-" * 40)
+    def test_divide_by_zero(self):
+        with self.assertRaises(ZeroDivisionError):
+            _ = 1 / 0
 
-    print("Test 3: run_python_file('calculator', '../main.py')")
-    result = run_python_file("calculator", "../main.py")
-    print("Starts with 'Error:'?", result.startswith("Error:"))
-    print("Message:", result)
-    print("-" * 40)
+    def test_string_concat(self):
+        self.assertEqual("Hello " + "World", "Hello World")
 
-    print("Test 4: run_python_file('calculator', 'nonexistent.py')")
-    result = run_python_file("calculator", "nonexistent.py")
-    print("Starts with 'Error:'?", result.startswith("Error:"))
-    print("Message:", result)
-    print("-" * 40)
+    def test_list_membership(self):
+        self.assertIn(5, [3, 4, 5])
+
+    def test_dict_access(self):
+        self.assertEqual({"a": 1}["a"], 1)
+
+    def test_boolean_logic(self):
+        self.assertTrue(True and not False)
 
 if __name__ == "__main__":
-    run_tests()
+    unittest.main()

@@ -8,6 +8,7 @@ from functions.get_file_content import schema_get_file_content
 from functions.run_python_file import schema_run_python_file
 from functions.write_file import schema_write_file
 from google.generativeai import types
+from functions.call_function import call_function
 
 def main():
     if len(sys.argv) < 2:
@@ -98,34 +99,23 @@ def main():
                         print(f"📞 Function call detected:\nName: {fn_name}\nArgs: {fn_args_raw}")
 
                         try:
-                            args = dict(fn_args_raw)
-                            if fn_name == "get_files_info":
-                                from functions.get_files_info import get_files_info
-                                result = get_files_info(working_directory=os.getcwd(), **args)
-                                print("get_files_info() executed successfully!")
-                                print(json.dumps(result, indent=2))
-                                function_call_handled = True
+                            function_call_result = call_function(fn_call, verbose=verbose_flag)
 
-                            elif fn_name == "get_file_content":
-                                from functions.get_file_content import get_file_content
-                                result = get_file_content(working_directory=os.getcwd(), **args)
-                                print("get_file_content() executed successfully!")
-                                print(json.dumps(result, indent=2))
-                                function_call_handled = True
+                            try:
+                                parts = function_call_result["parts"]
+                                function_response = parts[0]["function_response"]
+                                response_dict = function_response["response"]
+                            except (KeyError, IndexError, TypeError) as e:
+                                raise RuntimeError(f"❌ Malformed function result: {e}")
 
-                            elif fn_name == "run_python_file":
-                                from functions.run_python_file import run_python_file
-                                result = run_python_file(working_directory=os.getcwd(), **args)
-                                print("run_python_file() executed successfully!")
-                                print(result)
-                                function_call_handled = True
 
-                            elif fn_name == "write_file":
-                                from functions.write_file import write_file
-                                result = write_file(working_directory=os.getcwd(), **args)
-                                print("write_file() executed successfully!")
-                                print(json.dumps(result, indent=2) if isinstance(result, dict) else result)
-                                function_call_handled = True
+                            if verbose_flag:
+                                print(f"-> {response_dict}")
+                            else:
+                                result_text = response_dict.get("result") or response_dict.get("error", "No output.")
+                                print(result_text)
+
+                            function_call_handled = True
 
                         except Exception as e:
                             print("Error during function execution:", e)
